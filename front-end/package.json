@@ -1,68 +1,51 @@
 {
-  "name": "delivery-app-back-end",
-  "version": "0.1.0",
-  "description": "Front-end do projeto App de Delivery",
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "engineStrict": true,
+  "name": "realtime-delivery-platform-web",
+  "version": "2.0.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
-    "with-env": "SKIP_PREFLIGHT_CHECK=true",
-    "start": "npm run with-env react-scripts start",
-    "start:build": "PORT=3000 ./node_modules/.bin/serve -s build",
-    "build": "npm run with-env react-scripts build",
-    "test": "npm run with-env react-scripts test -- --runInBand --detectOpenHandles --verbose",
-    "test:coverage": "npm run with-env react-scripts test -- --coverage",
-    "test:coverage:json": "npm run with-env react-scripts test -- --coverage --coverageReporters=\"json-summary\" --watchAll=false --testFailureExitCode=0 --detectOpenHandles --runInBand --forceExit",
-    "eject": "npm run with-env react-scripts eject",
-    "lint": "eslint --no-inline-config --no-error-on-unmatched-pattern -c .eslintrc.json .",
-    "lint:styles": "stylelint **/*.css --config .stylelintrc.json --ignore-disables --allow-empty-input"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.7.1",
-    "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "11.2.7",
-    "@testing-library/user-event": "12.8.3",
-    "moment": "^2.29.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-redux": "^7.2.6",
-    "react-router-dom": "^6.2.1",
-    "react-scripts": "4.0.3",
-    "serve": "12.0.0",
-    "socket.io-client": "^4.4.1",
-    "web-vitals": "1.1.2"
+    "@hookform/resolvers": "^5.2.2",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@tanstack/react-query": "^5.90.16",
+    "axios": "^1.13.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-hook-form": "^7.71.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.30.2",
+    "socket.io-client": "^4.8.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "eslint-config-trybe-frontend": "1.2.1",
-    "stylelint": "13.13.1",
-    "stylelint-config-standard": "22.0.0",
-    "stylelint-order": "4.1.0",
-    "tailwind-styled-components": "^2.0.3"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
-    ],
-    "coveragePathIgnorePatterns": [
-      "index.js",
-      "serviceWorker.js",
-      "reportWebVitals.js",
-      "./services/renderWithRouter",
-      "./services/history"
-    ]
+    "@eslint/js": "^9.39.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jsdom": "^27.4.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.18"
   }
 }
