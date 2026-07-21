@@ -1,0 +1,12 @@
+process.env.NODE_ENV ??= 'test';
+process.env.API_PORT ??= '3001';
+process.env.APP_ORIGIN ??= 'http://localhost:3000';
+process.env.DATABASE_URL ??= 'mysql://test:test@localhost:3307/realtime_delivery_test';
+process.env.JWT_ACCESS_SECRET ??= 'test-access-secret-with-at-least-32-characters';
+process.env.JWT_REFRESH_SECRET ??= 'test-refresh-secret-with-at-least-32-characters';
+process.env.JWT_ISSUER ??= 'realtime-delivery-tests';
+process.env.JWT_AUDIENCE ??= 'realtime-delivery-test-web';
+process.env.ACCESS_TOKEN_TTL ??= '10m';
+process.env.REFRESH_TOKEN_TTL ??= '7d';
+process.env.COOKIE_SECURE ??= 'false';
+process.env.LOG_LEVEL ??= 'silent';
