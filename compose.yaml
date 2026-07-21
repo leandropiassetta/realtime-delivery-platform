@@ -1,0 +1,109 @@
+name: realtime-delivery-platform
+
+x-backend-environment: &backend-environment
+  NODE_ENV: production
+  API_PORT: 3001
+  APP_ORIGIN: http://localhost:3000
+  DATABASE_URL: mysql://delivery:${MYSQL_PASSWORD:-local-delivery-password}@mysql:3306/realtime_delivery
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-local-access-secret-change-before-production-2026}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-local-refresh-secret-change-before-production-2026}
+  JWT_ISSUER: realtime-delivery-platform
+  JWT_AUDIENCE: realtime-delivery-web
+  ACCESS_TOKEN_TTL: 10m
+  REFRESH_TOKEN_TTL: 7d
+  COOKIE_SECURE: 'false'
+  LOG_LEVEL: info
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: realtime_delivery
+      MYSQL_USER: delivery
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-local-delivery-password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-root-password}
+    ports:
+      - '127.0.0.1:3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} --silent']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    networks: [platform]
+
+  migration:
+    build:
+      context: ./back-end
+      target: build
+    command: ['npm', 'run', 'db:deploy']
+    environment: *backend-environment
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: 'no'
+    networks: [platform]
+
+  seed:
+    profiles: ['seed']
+    build:
+      context: ./back-end
+      target: build
+    command: ['npm', 'run', 'db:seed']
+    environment:
+      <<: *backend-environment
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-LocalDemoAdmin2026!}
+      SEED_SELLER_PASSWORD: ${SEED_SELLER_PASSWORD:-LocalDemoSeller2026!}
+      SEED_CUSTOMER_PASSWORD: ${SEED_CUSTOMER_PASSWORD:-LocalDemoCustomer2026!}
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    restart: 'no'
+    networks: [platform]
+
+  backend:
+    build:
+      context: ./back-end
+      target: runtime
+    environment: *backend-environment
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    ports:
+      - '127.0.0.1:3001:3001'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3001/api/v1/readiness').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    networks: [platform]
+
+  frontend:
+    build:
+      context: ./front-end
+      target: runtime
+      args:
+        VITE_API_URL: /api/v1
+        VITE_SOCKET_URL: /
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - '3000:8080'
+    networks: [platform]
+
+volumes:
+  mysql-data:
+
+networks:
+  platform:
+    driver: bridge
