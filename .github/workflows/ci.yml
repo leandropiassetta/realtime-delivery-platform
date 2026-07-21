@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      APP_ORIGIN: http://localhost:3000
+      DATABASE_URL: mysql://test:test-password@127.0.0.1:3306/realtime_delivery_test
+      JWT_ACCESS_SECRET: ci-access-secret-with-at-least-32-characters
+      JWT_REFRESH_SECRET: ci-refresh-secret-with-at-least-32-characters
+      JWT_ISSUER: realtime-delivery-ci
+      JWT_AUDIENCE: realtime-delivery-ci-web
+      RUN_INTEGRATION: 'true'
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: realtime_delivery_test
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test-password
+          MYSQL_ROOT_PASSWORD: root-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot-password --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: back-end/package-lock.json
+      - run: npm ci
+        working-directory: back-end
+      - run: npm run db:generate
+        working-directory: back-end
+      - run: npm run db:deploy && npm run db:seed
+        working-directory: back-end
+      - run: npm run lint
+        working-directory: back-end
+      - run: npm run typecheck
+        working-directory: back-end
+      - run: npm run test:coverage
+        working-directory: back-end
+      - run: npm run build
+        working-directory: back-end
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: back-end
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: front-end/package-lock.json
+      - run: npm ci
+        working-directory: front-end
+      - run: npm run lint
+        working-directory: front-end
+      - run: npm run typecheck
+        working-directory: front-end
+      - run: npm run test:coverage
+        working-directory: front-end
+      - run: npm run build
+        working-directory: front-end
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: front-end
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker compose config
+      - run: docker compose build backend frontend migration
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend, docker]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: docker compose up -d --build mysql migration backend frontend
+      - run: docker compose --profile seed run --rm seed
+      - run: npm run test:e2e
+      - if: always()
+        run: docker compose logs --no-color > compose.log
+      - if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-failure
+          path: |
+            playwright-report
+            test-results
+            compose.log
+          retention-days: 7

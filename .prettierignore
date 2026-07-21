@@ -1,0 +1,6 @@
+**/dist
+**/coverage
+**/node_modules
+front-end/public/images
+package-lock.json
+**/package-lock.json
