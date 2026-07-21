@@ -1,38 +1,40 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Relato de erro
+about: Relate um problema para nos ajudar a melhorar
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Descreva o erro**
+Explique de forma clara e objetiva o comportamento incorreto.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Como reproduzir**
+Passos para reproduzir o comportamento:
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+1. Acesse "..."
+2. Clique em "..."
+3. Execute "..."
+4. Observe o erro
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Comportamento esperado**
+Descreva o resultado que deveria ocorrer.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Capturas de tela**
+Se aplicável, adicione imagens que ajudem a explicar o problema.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Desktop:**
 
-**Additional context**
-Add any other context about the problem here.
+- Sistema operacional: [ex.: macOS]
+- Navegador: [ex.: Chrome]
+- Versão: [ex.: 130]
+
+**Dispositivo móvel:**
+
+- Dispositivo: [ex.: iPhone 15]
+- Sistema operacional: [ex.: iOS 18]
+- Navegador: [ex.: Safari]
+- Versão: [ex.: 18]
+
+**Contexto adicional**
+Inclua logs sem dados sensíveis ou qualquer outra informação relevante.
