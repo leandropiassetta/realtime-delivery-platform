@@ -27,7 +27,26 @@ export function createApp() {
     next();
   });
   app.use(pinoHttp({ logger }));
-  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          baseUri: ["'self'"],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'", 'data:'],
+          formAction: ["'self'"],
+          frameAncestors: ["'none'"],
+          imgSrc: ["'self'", 'data:'],
+          objectSrc: ["'none'"],
+          scriptSrc: ["'self'"],
+          scriptSrcAttr: ["'none'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          upgradeInsecureRequests: env.NODE_ENV === 'production' ? [] : null,
+        },
+      },
+    }),
+  );
   app.use(cors({ origin: env.APP_ORIGIN, credentials: true }));
   app.use(express.json({ limit: '100kb' }));
   app.use(express.urlencoded({ extended: false, limit: '20kb' }));

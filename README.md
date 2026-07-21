@@ -263,7 +263,7 @@ O workflow possui permissões `contents: read`, cancelamento concorrente e jobs 
 
 - backend: MySQL, migration, seed, lint, typecheck, unitários/integração, cobertura, build e auditoria de produção;
 - frontend: lint, typecheck, cobertura, build e auditoria de produção;
-- Docker: validação do Compose e build das imagens;
+- Docker: validação do Compose, build e bloqueio de CVEs corrigíveis altas/críticas com Trivy;
 - E2E: stack completa, Chromium, dez jornadas e artefatos em falhas.
 
 Dependabot acompanha npm nos três pacotes, GitHub Actions e imagens Docker.
@@ -293,6 +293,9 @@ As imagens são geradas contra a stack atual com `npm run docs:screenshots`.
 - Eventos internos desacoplam commit do pedido e emissão Socket.IO.
 - Soft delete preserva histórico e revoga sessões.
 - Nginx oferece frontend, API, documentação, imagens e Socket.IO em uma origem.
+- O Compose fornecido é destinado exclusivamente ao desenvolvimento local. Em produção, use
+  segredos próprios, HTTPS e `COOKIE_SECURE=true`; a API rejeita automaticamente configurações
+  locais ou cookies inseguros quando `NODE_ENV=production`.
 
 ## 20. Limitações
 
